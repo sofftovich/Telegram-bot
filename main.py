@@ -1,4 +1,3 @@
-
 import os
 import asyncio
 import json
@@ -22,7 +21,6 @@ def parse_interval(interval_str):
         return int(interval_str) * 3600  # Если просто число - считаем часами
     
     total_seconds = 0
-    # Ищем дни, часы, минуты
     days = re.search(r'(\d+)d', interval_str)
     hours = re.search(r'(\d+)h', interval_str)
     minutes = re.search(r'(\d+)m', interval_str)
@@ -71,7 +69,7 @@ def save_queue(queue):
 
 @dp.message(F.content_type == "text")
 async def handle_commands(message: Message):
-    global POST_INTERVAL
+    global POST_INTERVAL, CHANNEL_ID  # объявляем глобальные переменные в начале функции
     text = message.text.lower()
     
     if text == "/help":
@@ -96,7 +94,7 @@ async def handle_commands(message: Message):
 /interval 30m - каждые 30 минут
 /interval 1 - каждый час (старый формат)
 
-<b>📢 Управление каналом:</b>
+/📢 Управление каналом:
 /channel - показать текущий канал
 /setchannel -1001234567890 - установить ID канала
 
@@ -167,7 +165,6 @@ async def handle_commands(message: Message):
     
     elif text.startswith("/setchannel "):
         try:
-            global CHANNEL_ID
             new_channel = text.split()[1]
             
             # Проверяем формат ID канала
@@ -187,7 +184,7 @@ async def handle_commands(message: Message):
             await message.reply("📭 Очередь пуста")
         else:
             queue_text = f"📋 <b>Очередь ({len(queue)} фото):</b>\n\n"
-            for i, file_id in enumerate(queue[:10], 1):  # Показываем первые 10
+            for i, file_id in enumerate(queue[:10], 1):
                 queue_text += f"{i}. {file_id[:20]}...\n"
             
             if len(queue) > 10:
@@ -246,10 +243,8 @@ async def main():
     print(f"🔑 Токен бота: {TOKEN[:10]}...")
     print(f"📢 ID канала: {CHANNEL_ID}")
     
-    # Запускаем задачу постинга в фоне
     asyncio.create_task(scheduled_posting())
     
-    # Запускаем бота
     print("✅ Бот запущен и готов к работе!")
     await dp.start_polling(bot)
 
