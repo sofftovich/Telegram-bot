@@ -1,15 +1,11 @@
 app = "telegram-bot-yzrlsw"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
-
-[[services]]
-  internal_port = 8080
-  protocol = "tcp"
-
-  [[services.ports]]
-    handlers = []
-    port = 8080
+  dockerfile = "Dockerfile"
 
 [env]
-  # Сюда ничего не пиши. Секреты задал через UI Fly.io — этого достаточно.
+  # Переменные ты задаёшь через UI, а не здесь
+  # BOT_TOKEN и CHANNEL_ID
+
+[processes]
+  app = "python main.py"
