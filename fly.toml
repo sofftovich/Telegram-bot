@@ -1,17 +1,15 @@
-app = "название-твоего-приложения"  # можно будет переименовать
+app = "telegram-bot-yzrlsw"
 
-[env]
-  BOT_TOKEN = "секрет_автоматически_заменится"
-  CHANNEL_ID = "секрет_автоматически_заменится"
+[build]
+  builder = "paketobuildpacks/builder:base"
 
 [[services]]
   internal_port = 8080
   protocol = "tcp"
 
   [[services.ports]]
-    handlers = ["http"]
-    port = 80
+    handlers = []
+    port = 8080
 
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
+[env]
+  # Сюда ничего не пиши. Секреты задал через UI Fly.io — этого достаточно.
