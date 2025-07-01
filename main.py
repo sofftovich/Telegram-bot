@@ -6,9 +6,6 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import Message
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from dotenv import load_dotenv
-
-load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
@@ -16,9 +13,8 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")
 POST_INTERVAL = 60 * 60 * 2  # 2 часа
 
 def parse_interval(interval_str):
-    """Парсит интервал в формате: 1d 2h 30m или просто число (часы)"""
     if interval_str.isdigit():
-        return int(interval_str) * 3600  # Если просто число - считаем часами
+        return int(interval_str) * 3600
     
     total_seconds = 0
     days = re.search(r'(\d+)d', interval_str)
@@ -35,7 +31,6 @@ def parse_interval(interval_str):
     return total_seconds if total_seconds > 0 else None
 
 def format_interval(seconds):
-    """Форматирует секунды в читаемый вид"""
     days = seconds // (24 * 3600)
     hours = (seconds % (24 * 3600)) // 3600
     minutes = (seconds % 3600) // 60
@@ -69,7 +64,7 @@ def save_queue(queue):
 
 @dp.message(F.content_type == "text")
 async def handle_commands(message: Message):
-    global POST_INTERVAL, CHANNEL_ID  # объявляем глобальные переменные в начале функции
+    global POST_INTERVAL, CHANNEL_ID
     text = message.text.lower()
     
     if text == "/help":
@@ -167,7 +162,6 @@ async def handle_commands(message: Message):
         try:
             new_channel = text.split()[1]
             
-            # Проверяем формат ID канала
             if not (new_channel.startswith('-') and new_channel[1:].isdigit()):
                 await message.reply("❌ Неправильный формат ID канала. Должен начинаться с '-' и содержать только цифры")
                 return
@@ -240,8 +234,12 @@ async def scheduled_posting():
 
 async def main():
     print("🚀 Запуск бота...")
-    print(f"🔑 Токен бота: {TOKEN[:10]}...")
+    print(f"🔑 Токен бота: {TOKEN[:10] + '...' if TOKEN else None}")
     print(f"📢 ID канала: {CHANNEL_ID}")
+    
+    if not TOKEN:
+        print("❌ Ошибка: BOT_TOKEN не задан!")
+        return
     
     asyncio.create_task(scheduled_posting())
     
